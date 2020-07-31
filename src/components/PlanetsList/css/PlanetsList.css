@@ -1,0 +1,21 @@
+.planets {
+    padding: 0 0 35px 0;
+}
+
+.planets__header {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.planets__planet {
+    display: block;
+    padding: 3px 10px 3px 10px;
+    border: none;
+}
+.planets__planet:hover {
+    background: aquamarine;
+    border: none;
+}
+.planets__planet--selected {
+    background: aquamarine;
+}

@@ -1,0 +1,21 @@
+.stats__name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.stats__row {
+    margin-bottom: 5px;
+}
+
+.stats__prop {
+
+    font-size: 12px;
+    line-height: 14px;
+    color: rgb(120, 120, 120);
+    text-transform: uppercase;
+}
+
+.stats__val {
+    display: inline-block;
+    margin-right: 5px;
+}

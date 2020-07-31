@@ -1,0 +1,23 @@
+.pagination {
+    margin-top: 1rem;
+    display: flex;
+}
+
+.pagination__button {
+    font-size: 1.6rem;
+    line-height: 1.6rem;
+    background: transparent;
+    cursor: pointer;
+
+    padding: 3px 7px;
+    margin-right: 3px;
+    border: 1px solid rgb(220, 220, 220);
+}
+
+.pagination__button:hover {
+    background: rgb(230, 230, 230);
+}
+
+.pagination__button--current {
+    background: aquamarine;
+}
