@@ -13,7 +13,7 @@ export function getPlanetIdInUrl(path) {
 export function findPlanetInStore(planets, planetId) {
     if(!planets) return null
     
-    let planet;
+    let planet
     
     planets.forEach(pageObj => {
         pageObj.planets.forEach(planetsObj => {

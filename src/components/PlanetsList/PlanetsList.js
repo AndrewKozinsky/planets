@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react'
-import {findPlanetOnPageInStore} from './js/resources'
 import {useDispatch, useSelector} from 'react-redux'
-import apiData from '../../utils/ApiData'
-import {setPlanets} from '../../store/actions'
 import {Link, useLocation} from 'react-router-dom'
+import {setPlanets} from '../../store/actions'
+
 import PlanetsPagination from '../PlanetsPagination'
+import apiData from '../../utils/ApiData'
 import {getPlanetIdInUrl} from '../PlanetInfo/js/resources'
+import {findPlanetOnPageInStore} from './js/resources'
 import './css/PlanetsList.css'
 
 
@@ -31,28 +32,39 @@ export default function PlanetsList() {
         
         // В противном случае скачать планеты текущей страницы из API
         apiData.getPlanets(currentPlanetsPage)
-            .then(planets => {
-                dispatch(setPlanets(planets, currentPlanetsPage))
-                setPlanetsData(planets)
+            .then(serverRes => {
+                // Если сервер прислал ошибочный ответ
+                if(serverRes.status === 'Error') {
+                    setPlanetsData('Error')
+                }
+                // Сервер прислал успешный ответ
+                else {
+                    dispatch(setPlanets(serverRes.data, currentPlanetsPage))
+                    setPlanetsData(serverRes.data)
+                }
             })
-        
     }, [currentPlanetsPage])
+    
     
     if (!planetsData) return null
     
+    const middleEl = (planetsData === 'Error')
+        ? <p>Can't get data from a server...</p>
+        : <>
+            <List planets={planetsData} />
+            <PlanetsPagination />
+          </>
 
     return (
         <div className='planets' >
             <h3 className='planets__header'>Planets</h3>
-            <List planets={planetsData} />
-            <PlanetsPagination />
+            {middleEl}
         </div>
     )
 }
 
 // Компонент отрисовывающий список планет
 function List({planets}) {
-    
     let location = useLocation()
     const pagePlanetId = getPlanetIdInUrl(location.pathname)
     

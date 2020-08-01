@@ -15,10 +15,16 @@ class ApiData {
         try {
             return await fetch(url, params)
                 .then(data => data.json())
-                .then(data => data)
+                .then(data => ({
+                    status: 'Success',
+                    data
+                }))
         }
         catch (error) {
-            return error
+            // Если произошла ошибка, то послать ошибочный ответ
+            return {
+                status: 'Error'
+            }
         }
     }
     
@@ -28,21 +34,34 @@ class ApiData {
         const urlSuffix = 'planets/?page=' + pageNum
         
         let serverRes = await this.getData(urlSuffix)
-        const planets = serverRes.results
+        
+        if(serverRes.status === 'Error') return serverRes
+        
+        const planets = serverRes.data.results
         
         // К каждой планенты добавляется свойство id равное последнему числу в URL планеты
         planets.forEach(planet => {
             planet.id = this.getPlanetIdInUrl(planet.url)
         })
         
-        return planets
+        return {
+            status: 'Success',
+            data: planets
+        }
     }
     
     // Получение планеты по ID
     async getPlanet(planetId) {
         const urlSuffix = 'planets/' + planetId
-        
-        return await this.getData(urlSuffix)
+    
+        let serverRes = await this.getData(urlSuffix)
+    
+        if(serverRes.status === 'Error') return serverRes
+    
+        return {
+            status: 'Success',
+            data: serverRes.data
+        }
     }
     
     // Получение общего количества планет
@@ -51,16 +70,26 @@ class ApiData {
         const urlSuffix = 'planets'
     
         let serverRes = await this.getData(urlSuffix)
-    
-        return serverRes.count
+        if(serverRes.status === 'Error') return serverRes
+        
+        return {
+            status: 'Success',
+            data: serverRes.data.count
+        }
     }
     
     // Получение объекта со статистикой по персонажам, планетам и так далее
     async getStatistics() {
-        const addresses = await this.getData()
+        const serverRes = await this.getData()
+        
+        if(serverRes.status === 'Error') {
+            return serverRes
+        }
     
         const namesArr = []
         const requestsArr = []
+        
+        const addresses = serverRes.data
     
         for(let key in addresses) {
             namesArr.push(key)
@@ -69,7 +98,7 @@ class ApiData {
             )
         }
     
-        const countsArr = await Promise.all(requestsArr).then(values => values);
+        const countsArr = await Promise.all(requestsArr).then(values => values)
     
         const resultArr = []
     
@@ -79,7 +108,10 @@ class ApiData {
             })
         }
     
-        return resultArr
+        return {
+            status: 'Success',
+            data: resultArr
+        }
     }
     
     

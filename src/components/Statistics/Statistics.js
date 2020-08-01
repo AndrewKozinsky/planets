@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import apiData from '../../utils/ApiData'
 import './css/Statistics.css'
+
 
 // Компонент статистики
 export default function Statistics() {
@@ -10,17 +11,28 @@ export default function Statistics() {
     useEffect(() => {
         // Получить объект статистики и поставить в местное Состояние
         apiData.getStatistics()
-            .then(stats => {
-                setStats(stats)
+            .then(serverRes => {
+                // Если сервер прислал ошибочный ответ
+                if(serverRes.status === 'Error') {
+                    setStats('Error')
+                }
+                // Сервер прислал успешный ответ
+                else {
+                    setStats(serverRes.data)
+                }
             })
     }, [])
     
     if(!stats) return null
     
+    const middleEl = (stats === 'Error')
+        ? <p>Can't get data from a server...</p>
+        : <Stats statsArr={stats} />
+
     return (
         <div className='stats'>
             <p className='stats__name'>Statistics</p>
-            <Stats statsArr={stats} />
+            {middleEl}
         </div>
     )
 }

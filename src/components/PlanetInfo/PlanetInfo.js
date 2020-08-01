@@ -9,6 +9,7 @@ import './css/PlanetInfo.css'
 
 // Компонент с данными о планете
 export default function PlanetInfo() {
+    // Получу детали текущего адреса
     let location = useLocation()
     
     // Все планеты сохранённые с Хранилище
@@ -16,6 +17,7 @@ export default function PlanetInfo() {
     
     // Местное состояние где будут данные о планете о которой нужно показать данные
     let [planetData, setPlanetData] = useState(null)
+    
     
     // При изменении адреса страницы программа ищет массив планет сначала в Хранилище.
     // Если не находит, то скачивает с API и сохраняет в Хранилище.
@@ -38,16 +40,26 @@ export default function PlanetInfo() {
         }
         // Если в Хранилище данных о планете нет, то скачать из API
         else {
-            apiData.getPlanet(planetId).then(planet => {
-                const planetEl = <Planet planetData={planet} />
-                setPlanetData(planetEl)
+            apiData.getPlanet(planetId).then(serverRes => {
+                // Если сервер вернул ошибочный ответ
+                if(serverRes.status === 'Error') {
+                    setPlanetData('Error')
+                }
+                // Сервер прислал успешный ответ
+                else {
+                    const planetEl = <Planet planetData={serverRes.data} />
+                    setPlanetData(planetEl)
+                }
             })
     
+            // Поставить заглушку на время загрузки данных о планете.
             setPlanetData(<p>Planet info loading...</p>)
         }
     }, [location])
     
     if(!planetData) return <p>Select a planet to see details.</p>
+    
+    if(planetData === 'Error') return <p>Can't get data from a server...</p>
     
     return planetData
 }
